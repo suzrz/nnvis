@@ -16,5 +16,5 @@ setup(
     author_email="nemcova.silva@gmail.com",
     license="MIT",
     packages=["nnvis"],
-    install_requires=["numpy", "torch", "torchvision", "scipy", "sklearn", "matplotlib", "h5py"]
+    install_requires=["numpy", "torch>=1.8.1+cu111", "torchvision", "scipy", "sklearn", "matplotlib", "h5py"]
 )
