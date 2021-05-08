@@ -17,25 +17,25 @@ dataset = Path(dirname(dirname(__file__)), "data")
 init_state = Path(results, "init_state.pt")
 final_state = Path(results, "final_state.pt")
 
-# directories for single parameters experiments
-single = Path(results, "singleParam")
-single_img = Path(imgs, "singleParam")
+# directories for individual parameters experiments
+individual = Path(results, "individualParam")
+individual_img = Path(imgs, "individualParam")
 
 # directories for vector paramaters experiments
-vec = Path(results, "vec")
-vec_img = Path(imgs, "vec")
+layers = Path(results, "layers")
+layers_img = Path(imgs, "layers")
 
 # directory for preliminary experiments results
 prelim = Path(results, "preliminary")
 prelim_img = Path(imgs, "preliminary")
 
 # directory for random directions experiment
-random_dirs = Path(results, "rand_dirs")
-random_dirs_img = Path(imgs, "rand_dirs")
+random_dirs = Path(results, "randDirs")
+random_dirs_img = Path(imgs, "randDirs")
 
 # directory for PCA directions
-pca_dirs = Path(results, "PCA_dirs")
-pca_dirs_img = Path(imgs, "PCA_dirs")
+pca_dirs = Path(results, "PCADirs")
+pca_dirs_img = Path(imgs, "PCADirs")
 
 # actual loss and accuracy progress of the model
 actual_loss_path = Path(results, "actual_loss")
@@ -53,21 +53,21 @@ acc_path = Path(results, "acc_all")
 q_loss_path = Path(results, "q_loss_all")
 q_acc_path = Path(results, "q_acc_all")
 
-# single loss experiments paths
-svloss_path = Path(single, "svloss")  # results\svloss
-svloss_img_path = Path(single_img, "svloss")
+# individual loss experiments paths
+svloss_path = Path(individual, "svloss")  # results\svloss
+svloss_img_path = Path(individual_img, "svloss")
 
-# single accuracy experiments paths
-sacc_path = Path(single, "sacc")
-sacc_img_path = Path(single_img, "sacc")
+# individual accuracy experiments paths
+sacc_path = Path(individual, "sacc")
+sacc_img_path = Path(individual_img, "sacc")
 
 # vector loss experiments paths
-vvloss_path = Path(vec, "vvloss")
-vvloss_img_path = Path(vec_img, "vvloss")
+vvloss_path = Path(layers, "vvloss")
+vvloss_img_path = Path(layers_img, "vvloss")
 
 # vector accuracy experiments paths
-vacc_path = Path(vec, "vacc")
-vacc_img_path = Path(vec_img, "vacc")
+vacc_path = Path(layers, "vacc")
+vacc_img_path = Path(layers_img, "vacc")
 
 # preliminary experiments paths
 train_subs_loss = Path(prelim, "train_subs_loss")
@@ -80,7 +80,7 @@ epochs_loss = Path(os.path.join(prelim, "epochs_loss"))
 epochs_acc = Path(os.path.join(prelim, "epochs_acc"))
 
 # random directions experiment surface file
-surf = Path(os.path.join(results, "surf_file.h5"))
+surf = Path(os.path.join(random_dirs, "surf_file.h5"))
 
 
 def init_dirs():
@@ -88,7 +88,7 @@ def init_dirs():
     Function initializes directories
     """
     logger.info("Initializing directories")
-    dirs = [results, imgs, checkpoints, single, single_img, vec, vec_img, prelim,
+    dirs = [results, imgs, checkpoints, individual, individual_img, layers, layers_img, prelim,
             prelim_img, random_dirs, random_dirs_img, pca_dirs, pca_dirs_img]
 
     for d in dirs:

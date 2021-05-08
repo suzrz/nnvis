@@ -204,7 +204,7 @@ class Examinator2D:
 
         return converted_x, converted_y
 
-    def get_loss_grid(self, test_loader, resolution=50):
+    def get_loss_grid(self, test_loader, resolution=3):
         """
         Calculated the validation loss over a PCA projection grid.
 

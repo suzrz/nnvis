@@ -7,7 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 from matplotlib.font_manager import FontProperties
-from mpl_toolkits.mplot3d import Axes3D
 from nnvis import paths
 
 color_loss = "red"
@@ -63,7 +62,7 @@ def _plot_line(x, y, xlabel, ylabel, annotate=False, color="blue"):
         ax.annotate("{:.3f}".format(y[-3]), xy=(x[-3], y[-3]), xytext=(x[-3], y[-3] + y[-3]*k))
 
     fig.tight_layout()
-    plt.savefig(f"{os.path.join(os.path.join(paths.imgs), ylabel)}.pdf", format="pdf")
+    plt.savefig(f"{os.path.join(os.path.join(paths.prelim_img), ylabel)}.pdf", format="pdf")
     plt.close("all")
 
 
@@ -178,6 +177,7 @@ def map_distance(directory):
     :param directory: directory with distance files
     :return: dictionary of mapped distances assigned to according names
     """
+    logger.debug(f"Mapping distance to <0;1>. Data directory: {directory}")
     a_files = os.listdir(directory)
     distances = {}
     for file in a_files:
@@ -211,7 +211,8 @@ def plot_params_by_layer(x, layer, opacity_dict, show=False):
     :param opacity_dict: dictionary with travelled distances of each parameter
     :param show: show the plots
     """
-    files = os.listdir(paths.single)
+    logger.debug(f"Plotting all parameters of layer {layer} together.")
+    files = os.listdir(paths.individual)
 
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot()
@@ -225,15 +226,17 @@ def plot_params_by_layer(x, layer, opacity_dict, show=False):
             k = file + "_distance"  # key for opacity dictionary
             lab = file.split("_")  # get label (parameter position)
             try:
-                ax.plot(x, np.loadtxt(os.path.join(paths.single, file)), label=lab[-1],
+                ax.plot(x, np.loadtxt(os.path.join(paths.individual, file)), label=lab[-1],
                         alpha=opacity_dict[k], color="blueviolet")
             except KeyError:
-                continue  # distance file does not exist
+                logger.warning(f"No distance file for {file}")
+                continue
 
     ax.set_ylabel("Validation loss", fontproperties=font)
     ax.set_xlabel(r"$\alpha$", fontproperties=font)
 
-    plt.savefig("{}.pdf".format(os.path.join(paths.single_img, layer)), format="pdf")
+    logger.debug(f"Saving parameters of layer {layer} to {Path(paths.individual_img, layer).resolve()}")
+    plt.savefig("{}.pdf".format(Path(paths.individual_img, layer)), format="pdf")
 
     if show:
         plt.show()
@@ -247,7 +250,7 @@ def plot_vec_all_la(x):
 
     :param x: data for x-axis (interpolation coefficient)
     """
-    files = os.listdir(paths.vec)
+    files = os.listdir(paths.layers)
     fig, (ax, ax2) = plt.subplots(1, 2, figsize=(8, 3))
 
     ax.spines["right"].set_visible(False)
@@ -266,9 +269,9 @@ def plot_vec_all_la(x):
             k = file + "_distance"
             try:
                 if re.search("loss", file):
-                    ax.plot(x, np.loadtxt(os.path.join(paths.vec, file)), label=lab[-1], lw=1)
+                    ax.plot(x, np.loadtxt(os.path.join(paths.layers, file)), label=lab[-1], lw=1)
                 if re.search("acc", file):
-                    ax2.plot(x, np.loadtxt(os.path.join(paths.vec, file)), lw=1)
+                    ax2.plot(x, np.loadtxt(os.path.join(paths.layers, file)), lw=1)
             except KeyError:
                 logger.warning(f"Missing key {k} in opacity dict, will not plot line for {file}")
                 continue
@@ -279,13 +282,12 @@ def plot_vec_all_la(x):
     fig.legend()
     fig.subplots_adjust(bottom=0.17)
 
-    plt.savefig("{}_{}.pdf".format(paths.vec_img, "all_la"), format="pdf")
+    plt.savefig("{}_{}.pdf".format(paths.layers_img, "all_la"), format="pdf")
 
     plt.close("all")
 
 
-def plot_lin_quad_real():
-    alpha = np.linspace(0, 1, 40)
+def plot_lin_quad_real(alpha):
     epochs = np.arange(0, 14)
 
     if paths.loss_path.exists():
@@ -321,7 +323,8 @@ def plot_lin_quad_real():
     ax2.set_xlabel("Epochs", fontproperties=font)
     ax1.set_ylabel("Validation Loss", fontproperties=font)
 
-    plt.savefig(os.path.join(paths.vec_img, "lin_quadr_real.pdf"), format="pdf")
+    plt.savefig(os.path.join(paths.layers_img, "lin_quadr_real.pdf"), format="pdf")
+
     plt.close("all")
 
 
@@ -332,11 +335,11 @@ def plot_individual_lin_quad(x):
     :param x: x-axis data
     """
     data = {}
-    for fil in os.listdir(paths.single):  # get all linear interpolation results
+    for fil in os.listdir(paths.individual):  # get all linear interpolation results
         if re.search("svloss", fil) and not re.search("q", fil) and not re.search("distance", fil):
             data[fil] = ""
 
-    for fil in os.listdir(paths.single):  # get all quadratic interpolation results
+    for fil in os.listdir(paths.individual):  # get all quadratic interpolation results
         if re.search("svloss", fil) and re.search("q", fil):
             k = fil[:-2]
             try:
@@ -345,8 +348,8 @@ def plot_individual_lin_quad(x):
                 continue
 
     for key, value in data.items():
-        linear = Path(os.path.join(paths.single, key))
-        quadratic = Path(os.path.join(paths.single, value))
+        linear = Path(os.path.join(paths.individual, key))
+        quadratic = Path(os.path.join(paths.individual, value))
 
         try:
             linear = np.loadtxt(linear)
@@ -363,10 +366,10 @@ def plot_individual_lin_quad(x):
         ax.plot(x, linear, color="orange", label="Linear")
         ax.plot(x, quadratic, color="blue", label="Quadratic")
 
-        ax.set_xticks([], [])
-        ax.set_yticks([], [])
+        ax.set_xticks(ticks=[], minor=[])
+        ax.set_yticks(ticks=[], minor=[])
 
-        plt.savefig(os.path.join(paths.single_img, f"{key}_comparison.pdf"), format="pdf")
+        plt.savefig(os.path.join(paths.individual_img, f"{key}_comparison.pdf"), format="pdf")
         plt.close("all")
 
 

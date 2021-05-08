@@ -107,10 +107,13 @@ def overwrite_weights(model, init_weights, directions, step, device):
     :param step: step
     :param device: device
     """
+    logger.debug(f"Size of step: {step}")
+
     dx = directions[0]
     dy = directions[1]
 
     changes = [d0 * step[0] + d1 * step[1] for (d0, d1) in zip(dx, dy)]
+    logger.debug(f"Changes: {changes}")
 
     for (p, w, d) in zip(model.parameters(), init_weights, changes):
         p.data = w.to(device) + d.clone().detach().requires_grad_(True)
@@ -127,7 +130,7 @@ def calc_loss(model, test_loader, directions, device):
     """
     logger.info("Calculating loss function surface")
     filename = Path(os.path.join(paths.random_dirs, "surf.h5"))
-    logger.debug(f"Surface file: {filename}")
+    logger.debug(f"Surface file: {filename.resolve()}")
 
     set_surf_file(filename)
 

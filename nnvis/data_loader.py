@@ -18,8 +18,8 @@ def data_load(train_samples=60000, test_samples=10000):
     :return: train loader, test loader
     """
     logger.info("Loading data.")
-    logger.info(f"Training set size: {train_samples}")
-    logger.info(f"Test set size: {test_samples}")
+    logger.debug(f"Training set size: {train_samples}")
+    logger.debug(f"Test set size: {test_samples}")
 
     # preprocess data
     transform = transforms.Compose([
@@ -27,7 +27,7 @@ def data_load(train_samples=60000, test_samples=10000):
         transforms.ToTensor(),
         transforms.Normalize(0.1307, 0.3081)])
 
-    logger.debug(f"data transformations: {transform}")
+    logger.debug(f"Data transformations: {transform}")
 
     # prepare subsets
     train_set = datasets.MNIST(paths.dataset, train=True, download=True,
