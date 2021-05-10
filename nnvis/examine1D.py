@@ -1,3 +1,9 @@
+"""
+Neural Network Training Progress 1D examinator
+
+:author: Silvie Nemcova (xnemco06@stud.fit.vutbr.cz)
+:year: 2021
+"""
 import os
 import re
 import logging
@@ -5,6 +11,7 @@ import copy
 import torch
 import numpy as np
 import scipy.interpolate
+from tqdm import tqdm
 from pathlib import Path
 from numpy.polynomial import Polynomial
 from nnvis import paths, net, plot
@@ -100,7 +107,7 @@ class Linear(Examinator1D):
             layers = [name for name, _ in self.model.named_parameters()]
 
             self.model.load_state_dict(self.theta_f)
-            for alpha_act in self.alpha:
+            for alpha_act in tqdm(self.alpha, desc="Model Level Linear", dynamic_ncols=True):
                 for layer in layers:
                     self.__calc_theta_vec(layer, alpha_act)
                     self.model.load_state_dict(self.theta)
@@ -147,7 +154,7 @@ class Linear(Examinator1D):
             acc_list = []
 
             self.model.load_state_dict(self.theta_f)
-            for alpha_act in self.alpha:
+            for alpha_act in tqdm(self.alpha, desc=f"Parameter {layer}/{idxs} Level Linear", dynamic_ncols=True):
                 self.__calc_theta_single(layer + ".weight", idxs, alpha_act)
 
                 self.model.load_state_dict(self.theta)
@@ -214,7 +221,7 @@ class Linear(Examinator1D):
             acc_list = []
 
             self.model.load_state_dict(self.theta_f)
-            for alpha_act in self.alpha:
+            for alpha_act in tqdm(self.alpha, desc=f"Layer {layer} Level Linear", dynamic_ncols=True):
                 self.__calc_theta_vec(layer + ".weight", alpha_act)
                 self.__calc_theta_vec(layer + ".bias", alpha_act)
 
@@ -340,7 +347,7 @@ class Quadratic(Examinator1D):
 
             mid_check = self.__get_mid_point(paths.checkpoints)
 
-            for alpha_act in self.alpha:
+            for alpha_act in tqdm(self.alpha, desc="Model Level Quadratic", dynamic_ncols=True):
                 for layer in layers:
                     start_p = self.theta_i[layer].cpu()
                     mid_p = copy.deepcopy(
@@ -418,7 +425,7 @@ class Quadratic(Examinator1D):
                          f"End: {end}")
 
             self.model.load_state_dict(self.theta_f)
-            for alpha_act in self.alpha:
+            for alpha_act in tqdm(self.alpha, desc=f"Parameter {layer}/{idxs} Level Quadratic", dynamic_ncols=True):
                 self.__calc_theta_single_q(layer + ".weight", idxs, alpha_act, start, mid, end)
 
                 self.model.load_state_dict(self.theta)
@@ -486,14 +493,14 @@ class Quadratic(Examinator1D):
             end_w = [end_a, end_p]
 
             start_pb = self.theta_i[layer + ".bias"].cpu()
-            mid_pb = copy.deepcopy(torch.load(os.path.join(paths.checkpoints, "checkpoint_6"))[layer + ".bias"]).cpu()  # TODO AUTO MID
+            mid_pb = copy.deepcopy(torch.load(os.path.join(paths.checkpoints, mid_check))[layer + ".bias"]).cpu()  # TODO AUTO MID
             end_pb = self.theta_f[layer + ".bias"].cpu()
 
             start_b = [start_a, start_pb]
             mid_b = [mid_a, mid_pb]
             end_b = [end_a, end_pb]
 
-            for alpha_act in self.alpha:
+            for alpha_act in tqdm(self.alpha, desc=f"Layer {layer} Level Quadratic Path", dynamic_ncols=True):
                 self.__calc_theta_vec_q(layer + ".weight", alpha_act, start_w, mid_w, end_w)
                 self.__calc_theta_vec_q(layer + ".bias", alpha_act, start_b, mid_b, end_b)
 
