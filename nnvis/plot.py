@@ -288,8 +288,6 @@ def plot_vec_all_la(x):
 
 
 def plot_lin_quad_real(alpha):
-    epochs = np.arange(0, 14)
-
     if paths.loss_path.exists():
         lin = np.loadtxt(paths.loss_path)
     else:
@@ -314,7 +312,7 @@ def plot_lin_quad_real(alpha):
 
     c1, = ax1.plot(alpha, lin, label="Linear interpolation", color="orange")
     c2, = ax1.plot(alpha, quadr, label="Quadratic interpolation", color="blue")
-    c3, = ax2.plot(epochs, real, label="Real values", color="black")
+    c3, = ax2.plot(range(0, len(real + 1)), real, label="Real values", color="black")
 
     curves = [c1, c2, c3]
     ax2.legend(curves, [curve.get_label() for curve in curves])
