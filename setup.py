@@ -8,7 +8,7 @@ README = Path(HERE, "README.md").read_text()
 
 setup(
     name="nnvis",
-    version="1.0.3",
+    version="1.1.3",
     description="Visualizing tool for PyTorch NN models",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -17,5 +17,5 @@ setup(
     license="MIT",
     packages=["nnvis"],
     install_requires=["numpy", "torch>=1.8.1+cu111", "torchvision>=0.9.1+cu111",
-                      "scipy", "sklearn", "matplotlib", "h5py"]
+                      "scipy", "sklearn", "matplotlib", "h5py", "tqdm"]
 )
