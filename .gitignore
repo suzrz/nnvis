@@ -2,7 +2,13 @@
 .idea
 
 # venv
-venv
+venv*
 
 # Python cache
 __pycache__
+
+#builds
+dist
+build
+*.egg-info
+upload*
